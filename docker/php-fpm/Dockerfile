@@ -8,6 +8,7 @@ mailcap \
 && yum clean all \
 && cd /usr/local/src \
 && curl -LSs https://gitlab.com/davical-project/awl/repository/archive.tar.gz | tar xz \
+&& mv /usr/local/src/awl* /usr/local/src/awl.git \
 && echo "include_path=.:/usr/share/pear:/usr/share/php:/usr/local/src/awl.git/inc" >> /etc/php.ini \
 && sed -i 's/max_execution_time = 30/max_execution_time = 900/g' /etc/php.ini \
 && sed -i 's/max_input_time = 60/max_input_time = 300/g' /etc/php.ini \
