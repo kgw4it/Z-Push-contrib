@@ -208,7 +208,7 @@ class ZPushAutodiscover {
      * @return string
      */
     private function createResponse($email, $userFullname) {
-        $server_url = 'https://' . $_SERVER['SERVER_NAME'] . '/Microsoft-Server-ActiveSync';
+        $server_url = 'https://' . $_SERVER['HTTP_HOST'] . '/Microsoft-Server-ActiveSync';
         $xml = file_get_contents('response.xml');
         $response = new SimpleXMLElement($xml);
         $response->Response->User->DisplayName = $userFullname;
