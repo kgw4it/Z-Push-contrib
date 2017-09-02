@@ -99,7 +99,7 @@ class BackendCardDAV extends BackendDiff implements ISearchProvider {
             return false;
         }
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCardDAV->getActualUsername(): User '%s' is authenticated on CardDAV '%s'", $username, $url));
-        $principal = $cdc->findPrincipal($url);
+        $principal = $cdc->getPrincipal($url);
         if (!$principal) {
             ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCardDAV->getActualUsername(): Unable to find principal for '%s' on CardDAV '%s'", $username, $url));
             return false;
