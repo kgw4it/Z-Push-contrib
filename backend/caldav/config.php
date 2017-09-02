@@ -57,7 +57,8 @@ define('CALDAV_SERVER', 'caldavserver.domain.com');
 define('CALDAV_PORT', '443');
 
 // Path
-define('CALDAV_PATH', '/caldav.php/%u/');
+define('CALDAV_DISCOVER_PATH', '/remote.php/dav/');
+define('CALDAV_PATH', '/remote.php/dav/calendars/%a/');
 
 // Default CalDAV folder (calendar folder/principal). This will be marked as the default calendar in the mobile
 define('CALDAV_PERSONAL', 'PRINCIPAL');
@@ -66,7 +67,7 @@ define('CALDAV_PERSONAL', 'PRINCIPAL');
 // DAViCal, SOGo and SabreDav support it
 // SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower
-define('CALDAV_SUPPORTS_SYNC', false);
+define('CALDAV_SUPPORTS_SYNC', true);
 
 
 // Maximum period to sync.

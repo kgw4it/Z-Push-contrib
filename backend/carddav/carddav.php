@@ -49,6 +49,7 @@ class BackendCardDAV extends BackendDiff implements ISearchProvider {
     private $domain = '';
     private $username = '';
     private $url = null;
+    private $_actual_username;
     /**
      * @var carddav_backend
      */
@@ -82,6 +83,33 @@ class BackendCardDAV extends BackendDiff implements ISearchProvider {
     }
 
     /**
+     *  Return the actual username based on the
+     *  Authentication data
+     */
+    private function getActualUsername($username, $password) {
+        if ($this->_actual_username) {
+            return $this->_actual_username;
+        }
+        $url = sprintf("%s://%s:%d%s", CARDDAV_PROTOCOL, CARDDAV_SERVER, CARDDAV_PORT, CARDDAV_DISCOVER_PATH);
+        $cdc = new CalDAVClient($url, $username, $password); // a bit hacky, but it works
+        $connected = $cdc->CheckConnection();
+        
+        if (!$connected) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCardDAV->getActualUsername(): User '%s' is not authenticated on CardDAV '%s'", $username, $url));
+            return false;
+        }
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCardDAV->getActualUsername(): User '%s' is authenticated on CardDAV '%s'", $username, $url));
+        $principal = $cdc->getPrincipal();
+        if (!$principal) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCardDAV->getActualUsername(): Unable to find principal for '%s' on CardDAV '%s'", $username, $url));
+            return false;
+        }
+        $parts = explode('/', $principal, -1);
+        $this->_actual_username = array_pop($parts);
+        return $this->_actual_username;
+    }
+
+    /**
      * Authenticates the user - NOT EFFECTIVELY IMPLEMENTED
      * Normally some kind of password check would be done here.
      * Alternatively, the password could be ignored and an Apache
@@ -95,10 +123,14 @@ class BackendCardDAV extends BackendDiff implements ISearchProvider {
      * @return boolean
      */
     public function Logon($username, $domain, $password) {
+        $actual_username = $this->getActualUsername($username, $password);
         $this->url = CARDDAV_PROTOCOL . '://' . CARDDAV_SERVER . ':' . CARDDAV_PORT . str_replace("%d", $domain, str_replace("%u", $username, CARDDAV_PATH));
+        $this->url = str_replace('%a', $actual_username, $this->url);
         $this->default_url = CARDDAV_PROTOCOL . '://' . CARDDAV_SERVER . ':' . CARDDAV_PORT . str_replace("%d", $domain, str_replace("%u", $username, CARDDAV_DEFAULT_PATH));
+        $this->default_url = str_replace('%a', $actual_username, $this->default_url);
         if (defined('CARDDAV_GAL_PATH')) {
             $this->gal_url = CARDDAV_PROTOCOL . '://' . CARDDAV_SERVER . ':' . CARDDAV_PORT . str_replace("%d", $domain, str_replace("%u", $username, CARDDAV_GAL_PATH));
+            $this->gal_url = str_replace('%a', $actual_username, $this->gal_url);
         }
         else {
             $this->gal_url = false;

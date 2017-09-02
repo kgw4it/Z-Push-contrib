@@ -62,16 +62,19 @@ define('CARDDAV_PORT', '443');
 //      You set the CARDDAV_PATH to '/caldav.php/%u/addresses/' and personal and work will be autodiscovered
 // %u: replaced with the username
 // %d: replaced with the domain
+// %a: replaced with the actual username
 //   Add the trailing /
-define('CARDDAV_PATH', '/caldav.php/%u/');
+define('CARDDAV_DISCOVER_PATH', '/remote.php/dav/');
+define('CARDDAV_PATH', '/remote.php/dav/addressbooks/users/%a/');
 
 
 // Server path to the default addressbook
 //  Mobile device will create new contacts here. It must be under CARDDAV_PATH
 // %u: replaced with the username
 // %d: replaced with the domain
+// %a: replaced with the actual username
 //   Add the trailing /
-define('CARDDAV_DEFAULT_PATH', '/caldav.php/%u/addresses/');
+define('CARDDAV_DEFAULT_PATH', '/remote.php/dav/addressbooks/users/%a/contacts/');
 
 // Server path to the GAL addressbook. This addressbook is readonly and searchable by the user, but it will NOT be synced.
 // If you don't want GAL, comment it
@@ -93,7 +96,7 @@ define('CARDDAV_CONTACTS_FOLDER_NAME', '%u Addressbook');
 // DAViCal and SabreDav support it, but Owncloud, SOGo don't
 // SabreDav version must be at least 1.9.0, otherwise set this to false
 // Setting this to false will work with most servers, but it will be slower: 1 petition for the href of vcards, and 1 petition for each vcard
-define('CARDDAV_SUPPORTS_SYNC', false);
+define('CARDDAV_SUPPORTS_SYNC', true);
 
 
 // If the CardDAV server supports the FN attribute for searches

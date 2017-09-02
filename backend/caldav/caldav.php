@@ -53,6 +53,7 @@ class BackendCalDAV extends BackendDiff {
     private $_caldav;
     private $_caldav_path;
     private $_collection = array();
+    private $_actual_username;
 
     private $changessinkinit;
     private $sinkdata;
@@ -72,11 +73,46 @@ class BackendCalDAV extends BackendDiff {
     }
 
     /**
+     *  Return the actual username based on the
+     *  Authentication data
+     */
+    private function getActualUsername($username, $password) {
+        if ($this->_actual_username) {
+            return $this->_actual_username;
+        }
+
+        $url = sprintf("%s://%s:%d%s", CALDAV_PROTOCOL, CALDAV_SERVER, CALDAV_PORT, CALDAV_DISCOVER_PATH);
+        $cdc = new CalDAVClient($url, $username, $password);
+        $connected = $cdc->CheckConnection();
+        
+        if (!$connected) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCalDAV->getActualUsername(): User '%s' is not authenticated on CalDAV '%s'", $username, $url));
+            return false;
+        }
+
+        ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->getActualUsername(): User '%s' is authenticated on CalDAV '%s'", $username, $url));
+
+        $principal = $cdc->getPrincipal();
+
+        if (!$principal) {
+            ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCalDAV->getActualUsername(): Unable to find principal for '%s' on CalDAV '%s'", $username, $url));
+            return false;
+        }
+
+        $parts = explode('/', $principal, -1);
+
+        $this->_actual_username = array_pop($parts);
+        return $this->_actual_username;
+    }
+
+    /**
      * Login to the CalDAV backend
      * @see IBackend::Logon()
      */
     public function Logon($username, $domain, $password) {
+        $actual_username = $this->getActualUsername($username, $password);
         $this->_caldav_path = str_replace('%u', $username, CALDAV_PATH);
+        $this->_caldav_path = str_replace('%a', $actual_username, $this->_caldav_path);
         $url = sprintf("%s://%s:%d%s", CALDAV_PROTOCOL, CALDAV_SERVER, CALDAV_PORT, $this->_caldav_path);
         $this->_caldav = new CalDAVClient($url, $username, $password);
         if ($connected = $this->_caldav->CheckConnection()) {

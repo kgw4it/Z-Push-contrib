@@ -1016,4 +1016,28 @@ EOXML;
         return $report;
     }
 
+    function getPrincipal() {
+        $xml = <<<EOXML
+<?xml version="1.0" encoding="UTF-8"?>
+<A:propfind xmlns:A="DAV:">
+  <A:prop>
+    <A:current-user-principal/>
+  </A:prop>
+</A:propfind>
+EOXML;
+        $resp = $this->DoXMLRequest('PROPFIND', $xml);
+
+        $tag = null;
+        foreach ($this->xmlnodes as $index => $node) {
+            if ($node['tag'] === 'DAV::current-user-principal') {
+                $tag = $index + 1;
+            } else if ($node['tag'] === 'DAV::href' && $index === $tag) {
+                return $node['value'];
+            } else if ($tag !== null) {
+                return '';
+            }
+        }
+
+        return '';
+    }
 }
