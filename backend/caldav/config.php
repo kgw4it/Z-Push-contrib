@@ -58,7 +58,7 @@ define('CALDAV_PORT', '443');
 
 // Path
 define('CALDAV_DISCOVER_PATH', '/remote.php/dav/');
-define('CALDAV_PATH', '/remote.php/dav/calendars/%r/');
+define('CALDAV_PATH', '/remote.php/dav/calendars/%a/');
 
 // Default CalDAV folder (calendar folder/principal). This will be marked as the default calendar in the mobile
 define('CALDAV_PERSONAL', 'PRINCIPAL');
