@@ -92,7 +92,7 @@ class BackendCalDAV extends BackendDiff {
 
         ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendCalDAV->getActualUsername(): User '%s' is authenticated on CalDAV '%s'", $username, $url));
 
-        $principal = $cdc->getPrincipal($url);
+        $principal = $cdc->getPrincipal();
 
         if (!$principal) {
             ZLog::Write(LOGLEVEL_WARN, sprintf("BackendCalDAV->getActualUsername(): Unable to find principal for '%s' on CalDAV '%s'", $username, $url));
